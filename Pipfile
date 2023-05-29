@@ -5,6 +5,12 @@ name = "pypi"
 
 [packages]
 django = "*"
+decouple = "*"
+python-dotenv = "*"
+crispy-bootstrap5 = "*"
+django-jazzmin = "*"
+django-cleanup = "*"
+django-multiselectfield = "*"
 
 [dev-packages]
 
