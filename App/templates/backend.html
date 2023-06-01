@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+<!--  Block title -->
+{% block title %} All candidates {% endblock title %} 
+
+<!-- Navbar -->
+{% block nav-content %} 
+<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+</button>
+<div class="collapse navbar-collapse mt-3 mt-md-3 mt-lg-0" id="navbarSupportedContent">
+    <ul class="navbar-nav me-auto mb-2 mb-lg-0 align-middle">
+        <li class="nav-item">
+            <a href="#" class="btn btn-light my-btn2" title="Control Panel">
+                <i class="fas fa-user-cog f-size2" ></i>
+            </a>
+            <a href="{% url 'admin:index' %}" target="_blank" class="btn btn-warning my-btn2" title="Admin">
+                <i class="fas fa-cog f-size2" ></i>
+            </a>
+            <a href="{% url 'logout' %}" class="btn btn-danger my-btn2" title="Log out">
+                <i class="fas fa-power-off f-size2" ></i>
+            </a>
+        </li>
+    </ul>
+
+<hr class="text-light" >
+
+<!-- Global search (navbar) -->
+    <form class="d-flex">
+        <input type="search" name="q" class="form-control me-1" placeholder="Search" value="{{ request.GET.q }}">
+        <button type="submit" class="btn" style="background: #d3d3d3" title="Search">
+            <i class="fas fa-search"></i>
+        </button>
+        <a href="{% url 'backend' %}" class="btn btn-secondary ms-1" title="Refresh">
+            <i class="fas fa-sync-alt"></i>
+        </a>
+
+    </form>
+    <hr class="text-light" >
+</div>
+{% endblock nav-content %}
+
+
+<!-- Page content -->
+{% block content %}
+<div class="container" style="width:90%;">
+    
+    <!-- Filter -->
+    <form method="POST" class="mt-5 mb-2">
+        {% csrf_token %}
+        <div class="btn-group wd-100" role="groupe" aria-label="Basic radio toggle button group">
+            <!-- Occupation -->
+            <input type="radio" class="btn-check" value="FR-22" name="job" id="btnradio1" autocomplete="off">
+            <label class="btn btn-outline-secondary" for="btnradio1">FR-22</label>
+
+            <input type="radio" class="btn-check" value="BA-10" name="job" id="btnradio2" autocomplete="off">
+            <label class="btn btn-outline-secondary" for="btnradio2">BA-10</label>
+
+            <input type="radio" class="btn-check" value="FU-15" name="job" id="btnradio3" autocomplete="off">
+            <label class="btn btn-outline-secondary" for="btnradio3">FU-15</label>
+            &nbsp;&nbsp;
+            <!-- Gender -->
+            <input type="radio" class="btn-check" value="M" name="gender" id="btnradio4" autocomplete="off">
+            <label class="btn btn-outline-primary my-btn2" for="btnradio4">M</label>
+
+            <input type="radio" class="btn-check" value="F" name="gender" id="btnradio5" autocomplete="off">
+            <label class="btn btn-outline-danger my-btn2" for="btnradio5">F</label>
+            &nbsp;&nbsp;
+            <button type="submit" class="btn" style="background: #d3d3d3" title="Search">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+    </form>
+    <!--  Table -->
+    <table class="table table-bordered text-center ">
+        <thead class="table-secondary">
+            <tr>
+                <th style="width: 19%;">Name</th>
+                <th style="width: 19%;">Email</th>
+                <th style="width: 14%;">Phone</th>
+                <th style="width: 8%;">Gender</th>
+                <th style="width: 10%;">Occupation</th>
+                <th style="width: 10%;">Experience</th>
+                <th style="width: 15%;">Received</th>
+                <th clospan="2" style="width: 5%;">Action</th>
+            </tr>
+        </thead>
+        <tbody style="font-size: 14px;">
+            {% for data in candidates %}
+            <tr>
+                <td>{{ data.firstname }} {{ data.lastname }}</td>
+                <td>{{ data.email }} </td>
+                <td>{{ data.phone }} </td>
+                <td>{{ data.gender }} </td>
+                <!-- Statement to Occupation -->
+                {% if data.job == 'FR-22' %}
+                    <td>Frontend</td>
+                {% elif data.job == 'BA-10' %}
+                    <td>Backend</td>
+                {% else %}
+                <td>Fullstack</td>
+                {% endif %}
+
+                <!-- Statement to Experience -->
+                {% if data.experience == False %}
+                    <td class="text-danger">No</td>
+                {% else %}
+                    <td>Yes</td>
+                {% endif %}
+                
+                <td>{{ data.created_at | date:'m/d/Y (H:i)' }}</td>
+
+                <td >
+                    <a href="{% url 'candidate' data.id %}" class="btn btn-secondary my-btn2 btn-sm" title="View Candidate">
+                        <i class="fa fa-user-alt"></i>
+                    </a>
+                </td>
+                {% empty %}
+                <td colspan="8"class="text-danger"><strong>No records found</strong></td>
+                
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <nav>
+        {% if candidates.has_other_pages %}
+        <ul class="pagination">
+            {% if candidates.has_previous %}
+                <a href="?page=1" class="btn btn-outline-secondary mb-4" style="border-radius: 1px; border:1px solid #d3d3d3;">First</a>
+                <li class="page-item"><a href="?page={{ candidates.previous_page_number }}" class="page-link"><i class="fas fa-angle-double-left"></i></a> </li>
+            {% else %}
+                <li class="page-item disabled"></li>
+            {% endif %}
+
+            {% for i in candidates.paginator.page_range %}
+                {% if candidates.number == i  %}
+                    <li class="page-item active"><span class="page-link">{{ i }}<span class="sr-only"></span></span></li>
+                {% else %}
+                    <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if candidates.has_next %}
+                <li class="page-item"><a href="?page={{ candidates.next_page_number }}" class="page-link"><i class="fas fa-angle-double-right"></i></a> </li>
+                <a href="?page={{ candidates.paginator.num_pages }}" class="btn btn-outline-secondary mb-4" style="border-radius: 1px; border:1px solid #d3d3d3; border-left:none;">Last</a>
+            {% else %}
+                <li class="page-item disabled"></li>
+            {% endif %}
+        </ul>
+        {% endif %}
+    </nav>
+</div>
+{% endblock content %}

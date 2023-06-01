@@ -1,67 +1,28 @@
-{% extends 'base.html' %}
-{% load crispy_forms_tags %}
+{% extends "base.html" %}
+
+
+<!-- Page content -->
 
 {% block content %}
-<div class="container mt-3" style="width: 95%; font-size: 14px;">
-    <!-- Message from backend -->
-    <div class="text-center ">
-        {% for message in messages %}
-            {% if message.tags == 'success' %}
-                <div class="alert alert-primary alert-dismissible fade show" role="alert">{{ message }}
-                    <a href="{% url 'home' %}" type="button" class="btn btn-close" data-bs-dismiss="alert" aria-label="Close"></a>
-                </div>
-            {% endif %}
-        {% endfor %}
+    <div class="container card p-3 border-dark text-center mt-5" style="width:35%">
+        <!-- Message from backend (success - views.py)-->
+        <div class="text-center ">
+            {% for message in messages %}
+                {% if message.tags == 'success' %}
+                    <div class="alert alert-primary alert-dismissible fade show" role="alert"> <strong> {{ message }} </strong>
+                        <button type="button" class="btn btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <h1>Job vacancy register</h1>
+        <h5 class="mt-3">
+            Frontend: FR-22 &nbsp;&nbsp; | Backend: BA-10 &nbsp;&nbsp; | Fullstack: FU-15
+        </h5>
+        <hr>
+        <div class="d-grid gap-2 mt-4">
+            <a href="{% url 'register'  %}" class="btn btn-primary">Registration</a>
+            <a href="{% url 'backend'  %}" class="btn btn-warning">LOGIN</a>
+        </div>
     </div>
-    
-    <form method="POST" enctype="multipart/form-data" class="mt-3" autocomplete="off" novalidate>
-        {% csrf_token %}
-        <!-- Card 1 -->
-        <div class="card border-dark p-3">
-            <span class="btn btn-secondary mb-4" style="cursor:default;">
-                Frontend: FR-22 &nbsp; |&nbsp; Backend: BA-10 &nbsp; | &nbsp;Fullstack: FU-15
-            </span>
-            <div class="row">
-                <!-- {{ form|crispy }} -->
-                <div class="col-4">{{ form.firstname|as_crispy_field }} </div>
-                <div class="col-4">{{ form.lastname|as_crispy_field }}</div>
-                <div class="col-4">{{ form.job|as_crispy_field }}</div>
-            </div>
-            <div class="row">
-                <div class="col-4">{{ form.email|as_crispy_field }}</div>
-                <div class="col-4">{{ form.age|as_crispy_field }}</div>
-                <div class="col-4">{{ form.phone|as_crispy_field }}</div>
-            </div>
-            <hr style="border: 1px solid #007bff" >
-    
-            <div class="row">
-                <div class="col-4">{{ form.personality|as_crispy_field }}</div>
-                <div class="col-4">{{ form.salary|as_crispy_field }}</div>
-                <div class="col-2">{{ form.gender|as_crispy_field }}</div>
-                <div class="col-2">{{ form.smoker|as_crispy_field }}</div>
-            </div>
-            {{ form.experience|as_crispy_field }}
-            <hr style="border: 1px solid #007bff; margin-top: -15px" >
-            {{ form.message|as_crispy_field }}
-            {{ form.file|as_crispy_field }}
-        </div>
-        <br>
-        <div class="card border-dark p-3">
-            <span class="btn btn-secondary mb-4" style="cursor:default;">MARK YOUR SKILLS</span>
-            <div class="row">
-                <div class="col-2">{{ form.frameworks|as_crispy_field }} </div>
-                <div class="col-2">{{ form.languages|as_crispy_field }} </div>
-                <div class="col-2">{{ form.databases|as_crispy_field }} </div>
-                <div class="col-2">{{ form.libraries|as_crispy_field }} </div>
-                <div class="col-2">{{ form.mobile|as_crispy_field }} </div>
-                <div class="col-2">{{ form.others|as_crispy_field }} </div>
-                <hr style="border: 1px solid #007bff" >
-                <button type="submit" class="btn btn-outline-primary mt-3 btn-sm" style="width: 90px;">Submit</button>
-            </div>
-        </div>
-    </form>
-    
-</div> <!-- END // container-->
-<br><br><br><br>
-
 {% endblock content %}

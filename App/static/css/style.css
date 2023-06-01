@@ -1,9 +1,16 @@
+/*----------------------------
+# START CONFIGUARTION
+----------------------------*/
+
 html, body {
     height: 100%;
     margin: 0;
     max-width: 100%;
     overflow: visible;
 }
+/*----------------------------
+# FOOTER
+----------------------------*/
 
 /* Keep the footer always down */
 .wrapper {
@@ -12,4 +19,58 @@ html, body {
 }
 #footer, .push {
     height: 50px;
+}
+
+/*----------------------------
+# OTHERS
+----------------------------*/
+
+/* All button width */
+.my-btn {
+    width: 90px;
+}
+
+.my-btn2 {
+    width: 45px;
+}
+/* Remove lines in all <a> tags */
+a {
+    text-decoration: none !important;
+}
+
+/* Upload field boxe (file and image) */
+.text-break, .input-group-text {
+    font-size:  13px !important;
+}
+
+.f-size {
+    font-size: 26px;
+}
+
+.f-size2 {
+    font-size: 20px;
+}
+
+
+/*----------------------------
+# PAGINATION (grey theme)
+----------------------------*/
+.page-item.active .page-link {
+    columns: #fff;
+    background-color: #6c757d;
+    border: 1px solid #6c757d;
+}
+.pagination > li > a {
+    background-color: #fff;
+    color:#6c757d;
+}
+
+.pagination > li > a:focus,
+.pagination > li > a:hover,
+.pagination > span > a:focus,
+.pagination > span > a:hover {
+    color: #111;
+    background-color: #d3d3d3;
+    border: 1px solid #6c757d;
+    box-shadow: none;
 }

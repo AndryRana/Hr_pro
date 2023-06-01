@@ -11,6 +11,7 @@ crispy-bootstrap5 = "*"
 django-jazzmin = "*"
 django-cleanup = "*"
 django-multiselectfield = "*"
+pillow = "*"
 
 [dev-packages]
 

@@ -7,12 +7,36 @@ from .forms import CandidateForm
 class CandidateAdmin(admin.ModelAdmin):
     radio_fields = {'smoker': admin.HORIZONTAL}
     form = CandidateForm
-    readonly_fields = ['experience','firstname','lastname','job','email','age','phone','salary','personality','gender','smoker','file','frameworks','languages','databases','libraries','mobile','others','message']
     exclude=['status']
     list_filter = ['Situation']
-    list_display = ['name','job', 'email','age', 'phone','created_at', 'status', '_' ]
-    search_fields = ['firstname', 'lastname', 'email', 'age', 'Situation']
+    list_display = ['name','job', 'email', 'phone','created_at', 'status', '_' ]
+    search_fields = ['firstname', 'lastname', 'email', 'Situation']
     list_per_page = 10
+    
+    # Readonly section
+    readonly_fields = ['experience','firstname','lastname','job','email','birth','phone','salary',
+    'personality','gender','smoker','file','frameworks','languages','databases','libraries',
+    'mobile','others','message','image','institution','about_course','course','status_course','started_course', 
+    'finished_course','company','position','about_job','started_job', 'finished_job','employed','remote','travel']
+    
+    
+    # FIELDSET
+    fieldsets = [
+        # HR Operations
+        ("HR OPERATIONS", {"fields": ['Situation','company_note']}),
+        # PERSONAL
+        ("PERSONAL", {"fields": ['experience','gender','job','email','phone','salary','birth','personality','smoker','file', 'image','message']}),
+        # SKILLS
+        ("SKILLS", {"fields": ['frameworks','languages','databases','libraries','mobile','others']}),
+        # EDUCATION
+        ("EDUCATION", {"fields": ['status_course','started_course','finished_course','institution','course','about_course']}),
+        # Professional
+        ("PROFESSIONNAL", {"fields": ['started_job','finished_job','company','position','about_job']}),
+        # Note
+        ("NOTE", {"fields": ['employed','remote', 'travel']}),
+        
+        
+    ]
     
     # Function to hide F-name and L-name (When clicking over the candidates - Rows)
     def get_fields(self, request, obj = None):
@@ -46,4 +70,3 @@ class CandidateAdmin(admin.ModelAdmin):
         
         
 admin.site.register(Candidate, CandidateAdmin)
-
