@@ -14,8 +14,10 @@
     
 <!-- Navbar Content -->
 {% block nav-content %} 
+<a class="navbar-brand flex-grow-1 text-center" style="left:50%; transform: translateX(-50%); position: relative;"> 
     <i class=" fas {% if candidate.gender == 'F' %} fa-female {% else %} fa-male {% endif %} f-size"></i>
     &nbsp;&nbsp; {{ candidate.firstname }} {{ candidate.lastname }}
+</a>
 {% endblock nav-content %}
 
 <!-- Block footer -->

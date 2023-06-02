@@ -33,6 +33,11 @@
 		</header>
       <!-- ===== Block content (ROOT) ===== -->
       {% block content %} {% endblock content %}
+
+      {% comment %} INCLUDES {% endcomment %}
+      {% include 'modals/filter.html' %}
+      {% include 'modals/search.html' %}
+      {% include 'modals/logout.html' %}
     </div>
 
     <!-- Footer -->

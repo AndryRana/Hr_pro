@@ -9,34 +9,42 @@
     <span class="navbar-toggler-icon"></span>
 </button>
 <div class="collapse navbar-collapse mt-3 mt-md-3 mt-lg-0" id="navbarSupportedContent">
+    <!-- Left side navbar (Get users) -->
     <ul class="navbar-nav me-auto mb-2 mb-lg-0 align-middle">
-        <li class="nav-item">
-            <a href="#" class="btn btn-light my-btn2" title="Control Panel">
-                <i class="fas fa-user-cog f-size2" ></i>
-            </a>
-            <a href="{% url 'admin:index' %}" target="_blank" class="btn btn-warning my-btn2" title="Admin">
-                <i class="fas fa-cog f-size2" ></i>
-            </a>
-            <a href="{% url 'logout' %}" class="btn btn-danger my-btn2" title="Log out">
-                <i class="fas fa-power-off f-size2" ></i>
-            </a>
-        </li>
+        <li class="nav-item text-light">Welcome: <span class="text-warning">{{ user.get_username }}</span></li>
     </ul>
-
-<hr class="text-light" >
-
-<!-- Global search (navbar) -->
-    <form class="d-flex">
-        <input type="search" name="q" class="form-control me-1" placeholder="Search" value="{{ request.GET.q }}">
-        <button type="submit" class="btn" style="background: #d3d3d3" title="Search">
+    <!-- All Buttons an navbar (Right side) -->
+    <!-- Copntrol Panel -->
+    <li>
+        <a href="#" class="btn btn-light my-btn2" title="Control Panel">
+            <i class="fas fa-user-cog f-size2" ></i>
+        </a>
+        <!-- Django Admin -->
+        <a href="{% url 'admin:index' %}" target="_blank" class="btn btn-warning ms-1 my-btn2" title="Admin">
+            <i class="fas fa-cog f-size2" ></i>
+        </a>
+        <!-- Filter -->
+        <span class="text-light" >&nbsp;|&nbsp;</span>
+        <button class="btn my-btn2" style="background-color:#a8b8d0;" title="Filter"  data-bs-toggle="modal" data-bs-target="#filterModal">
+            <i class="fas fa-filter"></i>
+        </button>
+        <!-- Search -->
+        <button class="btn my-btn2 ms-1" style="background-color:#d3d3d3;" title="Search" data-bs-toggle="modal" data-bs-target="#searchModal">
             <i class="fas fa-search"></i>
         </button>
+        <!-- Refresh -->
         <a href="{% url 'backend' %}" class="btn btn-secondary ms-1" title="Refresh">
             <i class="fas fa-sync-alt"></i>
         </a>
+        <span class="text-light" >&nbsp;|&nbsp;</span>
+        <!-- Logout -->
+        <a class="btn btn-danger my-btn2" title="Log out" data-bs-toggle="modal" data-bs-target="#logoutModal">
+            <i class="fas fa-power-off f-size2" ></i>
+        </a>
+    </li>
+   
+<hr class="text-light" >
 
-    </form>
-    <hr class="text-light" >
 </div>
 {% endblock nav-content %}
 
@@ -45,32 +53,10 @@
 {% block content %}
 <div class="container" style="width:90%;">
     
-    <!-- Filter -->
-    <form method="POST" class="mt-5 mb-2">
-        {% csrf_token %}
-        <div class="btn-group wd-100" role="groupe" aria-label="Basic radio toggle button group">
-            <!-- Occupation -->
-            <input type="radio" class="btn-check" value="FR-22" name="job" id="btnradio1" autocomplete="off">
-            <label class="btn btn-outline-secondary" for="btnradio1">FR-22</label>
-
-            <input type="radio" class="btn-check" value="BA-10" name="job" id="btnradio2" autocomplete="off">
-            <label class="btn btn-outline-secondary" for="btnradio2">BA-10</label>
-
-            <input type="radio" class="btn-check" value="FU-15" name="job" id="btnradio3" autocomplete="off">
-            <label class="btn btn-outline-secondary" for="btnradio3">FU-15</label>
-            &nbsp;&nbsp;
-            <!-- Gender -->
-            <input type="radio" class="btn-check" value="M" name="gender" id="btnradio4" autocomplete="off">
-            <label class="btn btn-outline-primary my-btn2" for="btnradio4">M</label>
-
-            <input type="radio" class="btn-check" value="F" name="gender" id="btnradio5" autocomplete="off">
-            <label class="btn btn-outline-danger my-btn2" for="btnradio5">F</label>
-            &nbsp;&nbsp;
-            <button type="submit" class="btn" style="background: #d3d3d3" title="Search">
-                <i class="fas fa-search"></i>
-            </button>
-        </div>
-    </form>
+   <!-- Dashboard -->
+   <h1 class="mt-3 mb-3 card p-5 text-center border-dark">
+    DASHBOARD <span style="font-size:14px">Nesxt class</span>
+   </h1>
     <!--  Table -->
     <table class="table table-bordered text-center ">
         <thead class="table-secondary">
@@ -88,27 +74,27 @@
         <tbody style="font-size: 14px;">
             {% for data in candidates %}
             <tr>
-                <td>{{ data.firstname }} {{ data.lastname }}</td>
-                <td>{{ data.email }} </td>
-                <td>{{ data.phone }} </td>
-                <td>{{ data.gender }} </td>
+                <td id="top-border" label="Name">{{ data.firstname }} {{ data.lastname }}</td>
+                <td id="sm-border" label="Email">{{ data.email }} </td>
+                <td  id="sm-border" label="phone">{{ data.phone }} </td>
+                <td  id="sm-border" label="gender">{{ data.gender }} </td>
                 <!-- Statement to Occupation -->
                 {% if data.job == 'FR-22' %}
-                    <td>Frontend</td>
+                    <td  id="sm-border" label="Occupation">Frontend</td>
                 {% elif data.job == 'BA-10' %}
-                    <td>Backend</td>
+                    <td id="sm-border" label="Occupation">Backend</td> 
                 {% else %}
-                <td>Fullstack</td>
+                <td id="sm-border" label="Occupation">Fullstack</td>
                 {% endif %}
 
                 <!-- Statement to Experience -->
                 {% if data.experience == False %}
-                    <td class="text-danger">No</td>
+                    <td id="sm-border" label="Experience" > <span class="text-danger">No</span> </td>
                 {% else %}
-                    <td>Yes</td>
+                    <td id="sm-border" label="Experience">Yes</td>
                 {% endif %}
                 
-                <td>{{ data.created_at | date:'m/d/Y (H:i)' }}</td>
+                <td id="sm-border" label="Received">{{ data.created_at | date:'m/d/Y (H:i)' }}</td>
 
                 <td >
                     <a href="{% url 'candidate' data.id %}" class="btn btn-secondary my-btn2 btn-sm" title="View Candidate">
@@ -151,5 +137,6 @@
         </ul>
         {% endif %}
     </nav>
-</div>
+    <br><br><br>
+</div><!-- End  Container -->
 {% endblock content %}
