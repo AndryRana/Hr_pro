@@ -1,5 +1,5 @@
 from django import forms
-from .models import Candidate, SMOKER
+from .models import Candidate, SMOKER, Email
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 from datetime import date # Used in Birth date
@@ -490,4 +490,11 @@ class CandidateForm(forms.ModelForm):
              raise forms.ValidationError('Future date is invalid.')
         return finished_job
     
-    
+
+# ===================== SEND EMAIL TO CANDIDATES ========================|
+class EmailForm(forms.Form):
+    email = forms.EmailField()
+    subject = forms.CharField(max_length=100)
+    message = forms.CharField(widget= forms.Textarea)
+    class Meta:
+        fields = "__all__"

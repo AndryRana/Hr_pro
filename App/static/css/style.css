@@ -51,7 +51,17 @@ a {
     font-size: 20px;
 }
 
-
+/* Put the navbar content centered */
+.to_center {
+    left:50%;
+     transform: translateX(-50%);
+     position: relative;
+}
+.btn-side {
+    display: -webkit-flex;
+    display: flex;
+    flex-wrap: nowrap;
+}
 /*----------------------------
 # PAGINATION (grey theme)
 ----------------------------*/

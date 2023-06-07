@@ -12,6 +12,7 @@ django-jazzmin = "*"
 django-cleanup = "*"
 django-multiselectfield = "*"
 pillow = "*"
+pdfkit = "*"
 
 [dev-packages]
 

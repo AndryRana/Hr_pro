@@ -14,7 +14,7 @@
     
 <!-- Navbar Content -->
 {% block nav-content %} 
-<a class="navbar-brand flex-grow-1 text-center" style="left:50%; transform: translateX(-50%); position: relative;"> 
+<a class="navbar-brand flex-grow-1 text-center text-light to_center" > 
     <i class=" fas {% if candidate.gender == 'F' %} fa-female {% else %} fa-male {% endif %} f-size"></i>
     &nbsp;&nbsp; {{ candidate.firstname }} {{ candidate.lastname }}
 </a>
@@ -31,13 +31,16 @@
 
 <!-- PAGE CONTENT -->
 {% block content %}
-    <div class="container mt-5">
+    <div class="container {% block mt %}  mt-5 {% endblock mt %}" {% block font %} {% endblock font %}>
         <div class="d-flex justify-content-between">
+            {% block dt-user %} {% endblock dt-user %}
             <h6 class="mb-3">CANDIDATE: {{ candidate.id }}</h6>
+            {% block btn-download %} 
             <a class="btn {% if candidate.gender == 'F' %} btn-danger {% else %} btn-primary {% endif %} btn-sm border-light" 
                 href="{{ candidate.file.url }}" 
                 style="width:150px;">Download CV
             </a>
+            {% endblock btn-download %}
         </div>
         <hr>
         <div class="float-end">
@@ -128,7 +131,13 @@
             <p><strong>Available for trips:</strong> <span class="text-danger">No</span></p>
         {% endif %}
         <hr>
-        <a href="{% url 'backend' %}" class="btn btn-secondary mt-3 mb-3">All candidates</a>
+        {% block btn-bottom %} 
+        <a href="{% url 'backend' %}" class="btn btn-secondary mt-3 mb-3">Back</a>
+        {% if request.user.is_superuser %}
+        <a href="{% url 'admin:App_candidate_change' candidate.id %}" target="_blank" class="btn btn-dark mt-3 mb-3">Note</a>
+        {% else %}{% endif %}
+        <a href="{% url 'index' candidate.id %}" target="_blank" class="btn btn-warning mt-3 mb-3">Export to PDF</a>
+        {% endblock btn-bottom %}
     </div>
     <br><br><br>
 {% endblock content %}

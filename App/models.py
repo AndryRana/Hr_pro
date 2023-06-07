@@ -140,3 +140,16 @@ class Candidate(models.Model):
     def __str__(self):
         return self.firstname + " " + self.lastname
     
+# --------------------- SEND EMAIL ------------------------|
+    
+class Email(models.Model):
+    # Hidden
+    name = models.CharField(max_length=50)
+    email = models.EmailField(max_length=50)
+    status = models.CharField(max_length=50)
+    
+    # Not hidden
+    subject = models.CharField(max_length=50)
+    message = models.TextField()
+    def __str__(self):
+        return self.name

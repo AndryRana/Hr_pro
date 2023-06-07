@@ -1,7 +1,7 @@
 from django.shortcuts import render
-from .forms import CandidateForm
-from .models import Candidate
-from django.http import HttpResponseRedirect
+from .forms import CandidateForm, EmailForm
+from .models import Candidate, Email
+from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required # Login required to access private pages
 from django.views.decorators.cache import cache_control # Destroy the section after log out
@@ -10,6 +10,10 @@ from django.db.models import Q
 # Concatenate (F-name and L-name)
 from django.db.models.functions import Concat # Concatenate
 from django.db.models import Value as P
+# Export to PDF
+import pdfkit
+# Send Email
+from django.core.mail import EmailMessage
 
 #---------------------------- FRONTEND ---------------------------|
 # Home
@@ -50,8 +54,17 @@ def backend(request):
         job = request.POST.get('job')
         gender = request.POST.get('gender')
         filter = Candidate.objects.filter(Q(job=job) | Q(gender=gender))
+        # Counters
+        total = Candidate.objects.all().count()
+        frontend = Candidate.objects.filter(job='FR-22')
+        backend = Candidate.objects.filter(job='BA-10')
+        fullstack = Candidate.objects.filter(job='FU-15')
         context = {
-            'candidates':filter
+            'candidates':filter,
+            'total': total,
+            'frontend': frontend,
+            'backend': backend,
+            'fullstack': fullstack
         }
         return render(request, 'backend.html', context)
     #Global search
@@ -67,7 +80,20 @@ def backend(request):
     paginator = Paginator(all_candidate_list, 10)
     page = request.GET.get('page')
     all_candidate = paginator.get_page(page)
-    context = {'candidates': all_candidate}
+    
+    # Counters
+    total = Candidate.objects.all().count()
+    frontend = Candidate.objects.filter(job='FR-22')
+    backend = Candidate.objects.filter(job='BA-10')
+    fullstack = Candidate.objects.filter(job='FU-15')
+    
+    context = {
+        'candidates': all_candidate,
+        'total': total,
+        'frontend': frontend,
+        'backend': backend,
+        'fullstack': fullstack
+    }
     return render(request, 'backend.html', context)   
         
 # Access Candidates (individually)
@@ -85,3 +111,80 @@ def candidate(request, id):
     #     form.fields['file'].widget.attrs.update({'style':'display:none'})
     #     form.fields['image'].widget.attrs.update({'style':'display:none'})
     return render(request,'candidate.html', {'candidate':candidate})#, {'form':form}
+
+# Delete
+@login_required(login_url="login")
+@cache_control(no_cache=True,must_revalidate=True,no_store=True)
+def delete(request, id):
+    candidate = Candidate.objects.get(pk=id)
+    candidate.delete()
+    messages.success(request,"Candidate deleted successfully!")
+    return HttpResponseRedirect('/backend')
+
+#---------------------------- EXPORT TO PDF ---------------------------|
+@login_required(login_url="login")
+@cache_control(no_cache=True,must_revalidate=True,no_store=True)
+def index(request, id):
+    c= Candidate.objects.get(pk=id)
+    cookies = request.COOKIES
+    options = {
+        'page-size': 'Letter',
+        'encoding': "UTF-8",
+        'cookie' : [
+            ('csrftoken', cookies ['csrftoken']),
+            ('sessionid', cookies ['sessionid'])
+        ]
+    }
+# Method 1 (simple, but export all the content) Generate via url
+    # pdf = pdfkit.from_url('http://127.0.0.1:8000/'+str(c.id),False,options = options)
+    # response = HttpResponse(pdf, content_type='application/pdf')
+    # response[' Content-Disposition'] = 'attachment; filename=candidate.pdf'
+    # return response
+    
+# Method 2 ( Customized, but requires an external html file)
+    pdf_name = c.firstname + '_' + c.lastname + '.pdf'
+    pdf = pdfkit.from_url('http://127.0.0.1:8000/pdf/'+str(c.id),False,options = options)
+    response = HttpResponse(pdf, content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="{}"'.format(pdf_name)
+    return response
+
+@login_required(login_url="login")
+@cache_control(no_cache=True,must_revalidate=True,no_store=True)
+def pdf(request,id):
+    candidate = Candidate.objects.get(pk=id)
+    return render(request, 'pdf.html', {'candidate':candidate})
+
+#---------------------------- SEND EMAIL---------------------------|
+
+def email(request):
+    if request.method == 'POST':
+        # Save message in the DB (No ModelForm)
+        to_db = Email(
+            status = request.POST.get('status'),
+            name = request.POST.get('name'),
+            email = request.POST.get('email'),
+            subject = request.POST.get('subject'),
+            message = request.POST.get('message'),
+        )
+        to_db.save()
+        
+        # ModelForm
+        form = EmailForm(request.POST)
+        # Company subject
+        company = "HR-PRO"
+        # Send email via forms.py
+        if form.is_valid():
+            
+            email = form.cleaned_data['email']
+            subject = form.cleaned_data['subject']
+            message = form.cleaned_data['message']
+            
+            mail = EmailMessage(subject, message, company ,[email])
+            mail.send()
+            
+            messages.success(request, "Email sent successfully!")
+            return HttpResponseRedirect('/backend')
+        
+    else:
+        form = EmailForm()
+        return render(request, {'form': form})
