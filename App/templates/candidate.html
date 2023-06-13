@@ -91,8 +91,10 @@
         <p><strong>Institution:</strong> {{ candidate.institution }}</p>
         <p><strong>Course:</strong> {{ candidate.course }}</p>
         <p><strong>Started:</strong> {{ candidate.started_course }}</p>
-        <p><strong>Finished:</strong> {{ candidate.finished_course }}</p>
-        <p><strong>Others:</strong> {{ candidate.others }}</p>
+        <p>{% if candidate.finished_course == None %} {% else %}
+            <strong>Finished:</strong> {{ candidate.finished_course }}
+            {% endif %}
+        </p>
         <p><strong>Status:</strong> 
             {% if candidate.status_course == 'I took a break' %}
             <span class="text-danger">{{ candidate.status_course }}</span>
@@ -104,11 +106,15 @@
         <hr>
         <!-- EXPERIENCE -->
         <h6 class="text-primary mb-4 mt-4" >EXPERIENCE</h6>
+        {% if candidate.company == '' %}
+        <p class="text-danger"> This candidate has no experience</p>
+        {% else %}
         <p><strong>Company:</strong> {{ candidate.position }}</p>
         <p><strong>Position:</strong> {{ candidate.course }}</p>
         <p><strong>Started:</strong> {{ candidate.started_job }}</p>
         <p><strong>Finished:</strong> {{ candidate.finished_job}}</p>
         <p><strong>About:</strong> {{ candidate.about_job}}</p>
+        {% endif %}
         <hr>
         <!-- NOTE -->
         <h6 class="text-primary mb-4 mt-4" >NOTE</h6>
@@ -137,6 +143,8 @@
         <a href="{% url 'admin:App_candidate_change' candidate.id %}" target="_blank" class="btn btn-dark mt-3 mb-3">Note</a>
         {% else %}{% endif %}
         <a href="{% url 'index' candidate.id %}" target="_blank" class="btn btn-warning mt-3 mb-3">Export to PDF</a>
+        <!-- Go up -->
+        <a href="#" class="btn btn-light border my-btn-2"><i class="fas fa-arrow-up"></i></a>
         {% endblock btn-bottom %}
     </div>
     <br><br><br>

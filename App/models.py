@@ -109,15 +109,15 @@ class Candidate(models.Model):
     # EDUCATION (CARD 3)
     institution = models.CharField(max_length=50)
     course = models.CharField(max_length=50)
-    started_course = models.DateField(auto_now=False, auto_now_add=False)
-    finished_course = models.DateField(auto_now=False, auto_now_add=False)
+    started_course = models.DateField(auto_now_add=False)
+    finished_course = models.DateField(blank=True,null=True, auto_now_add=False)
     about_course=models.TextField()
     status_course= models.CharField(max_length=50,null=True, choices=STATUS_COURSE)
     #PROFESSIONAL (CARD 4)
     company = models.CharField(max_length=50)
     position = models.CharField(max_length=50)
-    started_job = models.DateField(auto_now=False, auto_now_add=False)
-    finished_job= models.DateField(auto_now=False, auto_now_add=False)
+    started_job = models.DateField(blank=True,null=True,auto_now_add=False)
+    finished_job= models.DateField(blank=True,null=True,auto_now_add=False)
     about_job=models.TextField()
     employed = models.BooleanField(null=True,verbose_name='I am employed')
     remote = models.BooleanField(null=True,verbose_name='I agree to work remotely')
@@ -144,6 +144,7 @@ class Candidate(models.Model):
     
 class Email(models.Model):
     # Hidden
+    employee = models.CharField(max_length=50)
     name = models.CharField(max_length=50)
     email = models.EmailField(max_length=50)
     status = models.CharField(max_length=50)
@@ -151,5 +152,7 @@ class Email(models.Model):
     # Not hidden
     subject = models.CharField(max_length=50)
     message = models.TextField()
+    # Get DateTime the email was sent
+    sent_on = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return self.name

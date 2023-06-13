@@ -4,6 +4,7 @@ from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 from datetime import date # Used in Birth date
 import datetime # Used to prevent future date
+from django.utils import timezone
 
 # Every letters to Lowercase
 class Lowercase(forms.CharField):
@@ -16,6 +17,8 @@ class Uppercase(forms.CharField):
         return value.upper()
 
 class CandidateForm(forms.ModelForm):
+    class Media:
+        js = ('js/script.js', )
     
     #First name
     firstname = forms.CharField(
@@ -43,7 +46,7 @@ class CandidateForm(forms.ModelForm):
         })
     )
     
-    # Job code  (Uppercase Function)
+    # Job code  (Uppercase Function) FR-22, BA-10, FU-15
     job = Uppercase(
         label='Job code', 
         min_length=5, max_length=5,
@@ -51,7 +54,7 @@ class CandidateForm(forms.ModelForm):
             attrs={
                 'placeholder':'Example: FR-22',
                 'style':'font-size: 13px; text-transform: uppercase',
-                'data-mask':'AA-00'
+                'x-data x-mask':'aa-99'
         })
     )
     
@@ -88,7 +91,15 @@ class CandidateForm(forms.ModelForm):
     # )
     
     #Experience
-    experience = forms.BooleanField(label="I have experience", required = False)
+    experience = forms.BooleanField(
+        label="I have experience",
+        required = False,
+        widget=forms.CheckboxInput(
+            attrs={
+                'id': 'emp'
+            }
+        )
+    )
     
     #Message
     message =  forms.CharField(
@@ -158,40 +169,99 @@ class CandidateForm(forms.ModelForm):
         ),
     )
    
+    # Finished Course 
+    finished_course = forms.DateTimeField(
+        required=False,
+        disabled= True,
+        widget=forms.DateTimeInput(
+            attrs={
+                'style':'font-size:13px; cursor:pointer',
+                'type':'date',
+                'onkeydown':'event.preventDefault();',
+                'min':'1950-01-01',
+                'max':'2030-01-01',
+        }),
+    )
+   
     # About the job 
     about_job =  forms.CharField(
+        required=False,
         label='About your last job', min_length=50, max_length=1000,
         widget=forms.Textarea(
             attrs={
                 'placeholder':'Tell us little about what you did at the company...',
                 'rows':7,
-                'style':'font-size: 13px;'
+                'style':'font-size: 13px;',
+                'class':'emp'
             }
         ),
     )
    
     # Company (Last Company)
     company = forms.CharField(
+        required=False,
         label = 'Last Company',
         min_length=3,
         max_length=50,
         widget=forms.TextInput(attrs={
             'style':'font-size: 13px;',
-            'placeholder':'Company name'
+            'placeholder':'Company name',
+            'class':'emp'
         })
     )
     
     # Position (Occupation)
     position = forms.CharField(
+        required=False,
         min_length=3,
         max_length=50,
         widget=forms.TextInput(attrs={
             'style':'font-size: 13px;',
-            'placeholder':'Your occupation'
+            'placeholder':'Your occupation',
+            'class':'emp'
         })
     )
     
-    employed = forms.BooleanField( label="I'm employed", required=False)
+    # Started Job
+    started_job = forms.DateTimeField(
+        required=False,
+        widget= forms.DateTimeInput(
+            attrs={
+                'style':'font-size:13px; cursor:pointer',
+                'type':'date',
+                'onkeydown':'event.preventDefault();',
+                'min':'1950-01-01',
+                'max':'2030-01-01',
+                'class':'emp',
+        })
+    )
+   
+    # finished Job
+    finished_job = forms.DateTimeField(
+        required=False,
+        widget= forms.DateTimeInput(
+            attrs={
+                'style':'font-size:13px; cursor:pointer',
+                'type':'date',
+                'onkeydown':'event.preventDefault();',
+                'min':'1950-01-01',
+                'max':'2030-01-01',
+                'class':'emp',
+                'id':'go'
+        })
+    )
+    
+    employed = forms.BooleanField( 
+        label="I'm employed", 
+        required=False,
+        widget=forms.CheckboxInput(
+            attrs={
+                'id': 'exp',
+                'class':'emp'
+            }
+        )
+        
+    )
     remote = forms.BooleanField( label='I agree to work remotely', required=False)
     travel = forms.BooleanField( label="I'm available for travel", required=False)
     
@@ -206,12 +276,12 @@ class CandidateForm(forms.ModelForm):
         #fields = ['firstname', 'lastname', 'email', 'message','age' ] 
         
         #Label_control
-        labels = {
-           'started_course': 'Started',
-           'finished_course': 'Finished',
-           'started_job': 'Started',
-           'finished_job': 'Finished',
-        }
+        # labels = {
+        #    'started_course': 'Started',
+        #    'finished_course': 'Finished',
+        #    'started_job': 'Started',
+        #    'finished_job': 'Finished',
+        # }
         
         SALARY = (
             ('', 'Salary Expectation (month)'),
@@ -231,10 +301,12 @@ class CandidateForm(forms.ModelForm):
             'birth':forms.DateInput(
                 attrs={
                     'style':'font-size:13px; cursor:pointer',
-                    'type':'date',
-                    'onkeydown':'event.preventDefault();',# Block typing inside the input
+                    # 'type':'date',
+                    # 'onkeydown':'event.preventDefault();',# Block typing inside the input
                     'min':'1950-01-01',
-                    'max':'2030-01-01'
+                    'max':'2030-01-01',
+                    'class':'datepicker', # New
+                    'placeholder':'Birth date' # New
                 }
             ),
             
@@ -249,46 +321,13 @@ class CandidateForm(forms.ModelForm):
                 }
             ),
             
-            # Finished course
-            'finished_course':forms.DateInput(
-                attrs={
-                    'style':'font-size:13px; cursor:pointer',
-                    'type':'date',
-                    'onkeydown':'event.preventDefault();',
-                    'min':'1950-01-01',
-                    'max':'2030-01-01'
-                }
-            ),
-            
-            # Started job
-            'started_job':forms.DateInput(
-                attrs={
-                    'style':'font-size:13px; cursor:pointer',
-                    'type':'date',
-                    'onkeydown':'event.preventDefault();',
-                    'min':'1950-01-01',
-                    'max':'2030-01-01'
-                }
-            ),
-            
-            # Finished job
-            'finished_job':forms.DateInput(
-                attrs={
-                    'style':'font-size:13px; cursor:pointer',
-                    'type':'date',
-                    'onkeydown':'event.preventDefault();',
-                    'min':'1950-01-01',
-                    'max':'2030-01-01'
-                }
-            ),
-    
             
             #Phone
             'phone': forms.TextInput(
                 attrs={
                     'style':'font-size:13px;',
-                    'placeholder':'Phone', 
-                    'data-mask':'+0 (00) 000-0000'
+                    'placeholder':'+9 (99) 999-9999', 
+                    'x-data x-mask':'+9 (99) 999-9999'
                 }
             ),
             #Salary
@@ -303,7 +342,12 @@ class CandidateForm(forms.ModelForm):
             'gender':forms.RadioSelect(choices=GENDER, attrs={'class': 'btn-check' }),
             'smoker':forms.RadioSelect(choices=SMOKER, attrs={'class': 'btn-check' }),
             'personality':forms.Select(attrs={'style':'font-size: 13px;'}),
-            'status_course':forms.Select(attrs={'style':'font-size: 13px;'}),
+            'status_course':forms.Select(
+                attrs={
+                'style':'font-size: 13px;',
+                'onChange':'statusCourse(this)'
+                }
+            ),
             
         }
         
@@ -449,46 +493,55 @@ class CandidateForm(forms.ModelForm):
         return image
     
     # 7) BIRTHDAY (Range:18 and 65)
-    def clean_birth(self):
-        birth = self.cleaned_data.get('birth')
-        # Variables
-        b = birth
-        now = date.today()
-        # the expression (now.month, now.day) < (b.month, b.day) compares the tuples (now.month, now.day) and (b.month, b.day). 
-        # This comparison returns a Boolean value (True or False), 
-        # which is then converted to an integer (1 for True and 0 for False) and subtracted from the age.
-        age = (now.year - b.year) - ((now.month, now.day) < (b.month, b.day))
-        # Statement
-        if age < 18 or age > 65:
-            raise forms.ValidationError('Denied ! Age must be between 18 and 65.')
-        return birth
+    # def clean_birth(self):
+    #     birth = self.cleaned_data.get('birth')
+    #     # Variables
+    #     b = birth
+    #     now = date.today()
+    #     # the expression (now.month, now.day) < (b.month, b.day) compares the tuples (now.month, now.day) and (b.month, b.day). 
+    #     # This comparison returns a Boolean value (True or False), 
+    #     # which is then converted to an integer (1 for True and 0 for False) and subtracted from the age.
+    #     age = (now.year - b.year) - ((now.month, now.day) < (b.month, b.day))
+    #     # Statement
+    #     if age < 18 or age > 65:
+    #         raise forms.ValidationError('Denied ! Age must be between 18 and 65.')
+    #     return birth
     
     # 8) Prevent FUTURES dates (card 3 and card 4)
-    # A) College
+    # a) started course
     def clean_started_course(self):
         started_course = self.cleaned_data['started_course']
         if started_course > datetime.date.today():
              raise forms.ValidationError('Future date is invalid.')
         return started_course
     
-    def clean_finished_course(self):
-        finished_course = self.cleaned_data['finished_course']
-        if finished_course > datetime.date.today():
-             raise forms.ValidationError('Future date is invalid.')
-        return finished_course
-    
-    # B) JOB
+    # b) Started job
     def clean_started_job(self):
         started_job = self.cleaned_data['started_job']
-        if started_job > datetime.date.today():
-             raise forms.ValidationError('Future date is invalid.')
-        return started_job
+        if started_job != None and started_job.date()> timezone.now().date(): 
+            # OR you can simplify (removing date()): started_job> timezone.now()
+            raise forms.ValidationError('Future date is invalid.')
+        else:
+            return started_job
     
-    def clean_finished_job(self):
-        finished_job = self.cleaned_data['finished_job']
-        if finished_job > datetime.date.today():
-             raise forms.ValidationError('Future date is invalid.')
-        return finished_job
+    # def clean_finished_course(self):
+    #     finished_course = self.cleaned_data['finished_course']
+    #     if finished_course > datetime.date.today():
+    #          raise forms.ValidationError('Future date is invalid.')
+    #     return finished_course
+    
+    # B) JOB
+    # def clean_started_job(self):
+    #     started_job = self.cleaned_data['started_job']
+    #     if started_job > datetime.date.today():
+    #          raise forms.ValidationError('Future date is invalid.')
+    #     return started_job
+    
+    # def clean_finished_job(self):
+    #     finished_job = self.cleaned_data['finished_job']
+    #     if finished_job > datetime.date.today():
+    #          raise forms.ValidationError('Future date is invalid.')
+    #     return finished_job
     
 
 # ===================== SEND EMAIL TO CANDIDATES ========================|

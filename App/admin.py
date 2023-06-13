@@ -34,8 +34,6 @@ class CandidateAdmin(admin.ModelAdmin):
         ("PROFESSIONNAL", {"fields": ['started_job','finished_job','company','position','about_job']}),
         # Note
         ("NOTE", {"fields": ['employed','remote', 'travel']}),
-        
-        
     ]
     
     # Function to hide F-name and L-name (When clicking over the candidates - Rows)
@@ -72,10 +70,19 @@ class CandidateAdmin(admin.ModelAdmin):
 admin.site.register(Candidate, CandidateAdmin)
 
 class EmailAdmin(admin.ModelAdmin):
-    readonly = ('status', 'name','email','subject','message')
-    list_display = ['status', 'name','email','subject']
+    readonly_fields = ('status', 'name','email','subject','message','employee','sent_on')
+    list_display = ['status', 'name','email','subject', 'sent_on']
     search_fields = ['name','email','subject']
     list_filter = ['status']
     list_per_page = 10
+
+# FIELDSET
+    fieldsets = [
+        ("INFORMATIVE DATA", {"fields": ['email','status']}),
+        
+        ("EMAIL CONTENT", {"fields": ['subject','message']}),
+        
+        ("REGISTRATION", {"fields": ['employee','sent_on']})
+    ]
 
 admin.site.register(Email, EmailAdmin)
