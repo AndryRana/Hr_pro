@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Candidate, Email
+from .models import Candidate, Email, Chat_candidate
 from django.utils.html import format_html
 from .forms import CandidateForm, EmailForm
 
@@ -69,6 +69,7 @@ class CandidateAdmin(admin.ModelAdmin):
         
 admin.site.register(Candidate, CandidateAdmin)
 
+# ======================== SEND EMAIL ======================== |
 class EmailAdmin(admin.ModelAdmin):
     readonly_fields = ('status', 'name','email','subject','message','employee','sent_on')
     list_display = ['status', 'name','email','subject', 'sent_on']
@@ -86,3 +87,9 @@ class EmailAdmin(admin.ModelAdmin):
     ]
 
 admin.site.register(Email, EmailAdmin)
+
+# ======================== CHATBOX ======================== |
+# About Candidate
+class Chat_candidateAdmin(admin.ModelAdmin):
+    list_display = ['candidate_email', 'user', 'dt']
+admin.site.register(Chat_candidate, Chat_candidateAdmin)

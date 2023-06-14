@@ -21,6 +21,25 @@ html, body {
     height: 50px;
 }
 
+
+/*----------------------------
+# CHATBOX
+----------------------------*/
+
+/* Chat data (First container) */
+#chat-data {width:80%;}
+/* Card data (second container) */
+.card-chat {
+    width: 80%;
+    font-size: 14px;
+    overflow-y: auto;
+    height: 700px;
+    scroll-behavior: smooth;
+}
+
+/* Font-size icon (back button navbar [back.html]) */
+.fa-size{font-size: 20px;}
+
 /*----------------------------
 # OTHERS
 ----------------------------*/
@@ -54,8 +73,8 @@ a {
 /* Put the navbar content centered */
 .to_center {
     left:50%;
-     transform: translateX(-50%);
-     position: relative;
+    transform: translateX(-50%);
+    position: relative;
 }
 .btn-side {
     display: -webkit-flex;

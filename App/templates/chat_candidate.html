@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+<!-- Block Title -->
+{% block title %}
+Chat Group
+{% endblock title %}
+
+<!-- Block navbar -->
+{% block nav-fixed %} fixed-top {% endblock nav-fixed %}
+{% block nav-content %}
+<a class="navbar-brand flex-grow-1 text-center text-light to_center">
+    <i class="fas fa-comment-alt"></i>&nbsp;&nbsp; ABOUT CANDIDATE
+</a>
+{% include 'partials/back.html' %}
+{% endblock nav-content %}
+
+<!-- Block footer -->
+{% block footer %}
+style="color: #d3d3d3"
+{% endblock footer %}
+
+<!-- PAge content -->
+{% block content %}
+<style>
+    body {background-color:#e2e3e5;}
+</style>
+<!-- First Container -->
+<div class="container mb-3 mt-4" id="chat-data">
+    <button class="btn btn-light border-dark" style="cursor:default;">
+        Candidate: <strong>{{ candidate.firstname  }} {{ candidate.lastname  }}</strong>
+    </button>
+    <button class="border-dark btn {% if candidate.Situation == 'Pending'  %} btn-warning {% elif candidate.Situation == 'Approved'  %} btn-success {% else  %} btn-danger {% endif %} " style="cursor:default;">
+        {{ candidate.Situation }}
+    </button>
+
+</div>
+<!-- second Container -->
+<div class="container mt-3 mb-5 card-chat" >
+    <div class="card border p-4" id="top">
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="candidate_email" value="{{ candidate.email }}">
+            <input type="hidden" name="user" value="{{ user.get_username }}">
+            <div class="input-group mb-4">
+                <input type="text" name="chat" class="form-control" placeholder="Your comment here ...">
+                <button class="btn btn-outline-secondary" type="submit">Submit</button>
+            </div>
+            <hr class="text-primary border-5">
+        </form>
+
+        {% for data in chat_candidate  %} <!-- 'FOR' to get candidate chat -->
+            {% if data.candidate_email == candidate.email  %}    <!-- It makes a comparison (TWO models class)-->
+                {% for x in list_users %} <!-- 'FOR' to get all Users -->
+                    {% if x.is_superuser %}
+                        {% if data.user == x.username %}
+                            {% include 'partials/talk_adm.html' %}
+                        {% else %}
+                            {% include 'partials/talk_users.html' %}
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+        <!-- Go up -->
+        {% include 'partials/go_up.html' %}
+    </div>
+
+</div> <!-- /.container -->
+{% endblock content %}

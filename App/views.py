@@ -1,6 +1,6 @@
-from django.shortcuts import render
-from .forms import CandidateForm, EmailForm
-from .models import Candidate, Email
+from django.shortcuts import render, redirect
+from .forms import CandidateForm, EmailForm, Chat_candidateForm
+from .models import Candidate, Email, Chat_candidate
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import (
@@ -21,6 +21,9 @@ import pdfkit
 
 # Send Email
 from django.core.mail import EmailMessage
+
+# Get Users
+from django.contrib.auth.models import User
 
 
 # ---------------------------- FRONTEND ---------------------------|
@@ -61,14 +64,9 @@ def backend(request):
     # --------- Global filter-------|
     if "f" in request.GET:
         f = request.GET["f"]
-        all_candidate_list = (
-            Candidate.objects
-            .filter(
-                Q(job__iexact=f)
-                | Q(gender__iexact=f)
-            )
-            .order_by("-created_at")
-        )
+        all_candidate_list = Candidate.objects.filter(
+            Q(job__iexact=f) | Q(gender__iexact=f)
+        ).order_by("-created_at")
     # ------- Global search --------|
     elif "q" in request.GET:
         q = request.GET["q"]
@@ -83,12 +81,12 @@ def backend(request):
             )
             .order_by("-created_at")
         )
-    
+
     # ------- ELSE --------|
     else:
         all_candidate_list = Candidate.objects.all().order_by("-created_at")
     # Pagination
-    paginator = Paginator(all_candidate_list, 4)
+    paginator = Paginator(all_candidate_list, 10)
     page = request.GET.get("page")
     all_candidate = paginator.get_page(page)
 
@@ -131,10 +129,19 @@ def candidate(request, id):
 @login_required(login_url="login")
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def delete(request, id):
+    x = Candidate.objects.values_list('email', flat=True)
+    y = Chat_candidate.objects.filter(candidate_email__in = x)
     candidate = Candidate.objects.get(pk=id)
-    candidate.delete()
-    messages.success(request, "Candidate deleted successfully!")
-    return HttpResponseRedirect("/backend")
+    for data in y:
+        if data.candidate_email in candidate.email:
+            candidate.delete()
+            Chat_candidate.objects.exclude(candidate_email__in = x).delete()
+            messages.success(request, "Candidate deleted successfully!")
+            return HttpResponseRedirect("/backend")
+        else:
+            candidate.delete()
+            messages.success(request, "Candidate deleted successfully!")
+            return HttpResponseRedirect("/backend")
 
 
 # ---------------------------- EXPORT TO PDF ---------------------------|
@@ -209,3 +216,24 @@ def email(request):
     else:
         form = EmailForm()
         return render(request, {"form": form})
+
+
+# ---------------------------- CHATBOX---------------------------|
+# CANDIDATE CHAT GROUP
+@login_required(login_url="login")
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+def chat_candidate(request, id):
+    candidate = Candidate.objects.get(pk=id)
+    chat_candidate = Chat_candidate.objects.all().order_by("-dt")
+    list_users = User.objects.all()
+    form = Chat_candidateForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        return redirect("chat_candidate", id=candidate.id)
+    context = {
+        "form": form,
+        "chat_candidate": chat_candidate,
+        "list_users": list_users,
+        "candidate": candidate,
+    }
+    return render(request, "chat_candidate.html", context)

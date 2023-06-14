@@ -81,7 +81,9 @@
                 <th style="width: 10%;">Occupation</th>
                 <th style="width: 10%;">Experience</th>
                 <th style="width: 15%;">Received</th>
-                <th clospan="2" style="width: 5%;">Actions</th>
+                <th clospan="2" style="width: 5%;" class="bg-secondary text-light">
+                    <i class="fas fa-tools"></i>&nbsp;&nbsp; Actions
+                </th>
             </tr>
         </thead>
         <tbody style="font-size: 14px;">
@@ -118,6 +120,9 @@
                 <td class="btn-side">
                     <a href="{% url 'candidate' data.id %}" class="btn btn-secondary btn-sm my-btn2" title="View Candidate">
                         <i class="fas fa-user-alt"></i>
+                    </a>
+                    <a href="{% url 'chat_candidate' data.id %}" class="btn btn-sm my-btn2 ms-1" title="About Candidate" style="background-color: #e2e3e5;">
+                        <i class="fas fa-comment-alt"></i>
                     </a>
                     {% if request.user.is_superuser %}
                     <a href="" class="btn btn-danger ms-1 btn-sm my-btn2" title="delete" data-bs-toggle="modal" data-bs-target="#deleteModal{{ data.pk }}">

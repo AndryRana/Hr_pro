@@ -39,6 +39,9 @@ urlpatterns = [
     path('pdf/<int:id>/', views.pdf, name='pdf'),
     # Send email
     path('email', views.email, name='email'),
+    # Candidate (Chat group)
+    path('chat_candidate/<int:id>/', views.chat_candidate, name='chat_candidate'),
+    
     
     
 ]  + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
